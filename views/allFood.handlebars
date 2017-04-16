@@ -1,0 +1,73 @@
+
+<div class="addFoodContainer">
+  {{> add_food }}
+</div>
+
+<div class="actionContainer">
+  <a href="#give"><div class="actionButton giveButton">GIVE</div><a>
+  <a href="#receive"><div class="actionButton receiveButton">RECEIVE</div></a>
+</div>
+
+<a href="#receive"><div class="arrow">&darr;</div></a>
+
+
+<div id="receive" class="foodContainer">
+  <div class="sectionTitle">available food</div>
+  <div class="foodFlexbox">
+    {{#each foods}}
+
+      <div class="food">
+        <div class="foodPic" style="background-image: url({{this.FB_Image_URL}});"></div>
+
+        <div class="foodInfo">
+          <div>
+            <h2>{{this.name}}</h2>
+            <p>Description: {{this.description}}</p>
+            <p>Input Date: {{this.date}}</p>
+            {{elapsed this.date}}
+          </div>
+        </div>
+
+        <a class="deleteButton" href="/food/{{this._id}}/delete">DELETE</a>
+      </div>
+
+    {{/each}}
+  </div>
+</div>
+
+<script type="text/javascript">
+  var giveButton = document.querySelector('.giveButton');
+  var receiveButton = document.querySelector('.receiveButton');
+  var arrow = document.querySelector('.arrow');
+  var addFoodContainer = document.querySelector('.addFoodContainer');
+  var formContainer = document.querySelector('.formContainer');
+
+  giveButton.addEventListener('click', function() {
+    console.log('clicked give.');
+    addFoodContainer.classList.add('showAddFoodContainer');
+    formContainer.classList.add('showAddForm');
+    arrow.classList.add('hiddenArrow');
+  }, false);
+
+  formContainer.addEventListener('click', function(e) {
+    e.stopPropagation();
+    console.log('clicked form container');
+  }, false);
+
+  addFoodContainer.addEventListener('click', function() {
+    console.log('clicked add food container / closed winow');
+    addFoodContainer.classList.remove('showAddFoodContainer');
+    formContainer.classList.remove('showAddForm');
+    arrow.classList.remove('hiddenArrow');
+  }, false);
+
+
+  window.onscroll = function() {
+    if (document.body.scrollTop > (screen.height * 0.5) || document.documentElement.scrollTop > (screen.height * 0.5) ) {
+        arrow.classList.add('hiddenArrow');
+    } else {
+        arrow.classList.remove('hiddenArrow');
+    }
+  };
+
+</script>
