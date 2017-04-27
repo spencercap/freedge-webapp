@@ -5,7 +5,8 @@
 
 ```cli
 cd ./
-npm install`
+npm install
+```
 
 ```cli
 cd ./frontend
@@ -20,22 +21,12 @@ cd ./frontend
 npm run dev
 ```
 
-```cli
-cd ./frontend
-npm run dev
-```
-
 
 **build vue frontend** (builds to ./public folder)
 
 ```cli
 cd ./frontend
 npm run build
-```
-
-```cli
-cd ./frontend
-npm run build`
 ```
 
 
