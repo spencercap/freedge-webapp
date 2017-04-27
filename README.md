@@ -1,11 +1,22 @@
-# freedge-vue-express
+# NYU FREEdge (vue + express)
 
-1.
-`npm install`
+* installs
+`cd ./
+npm install`
 
-2. build vue frontend
-`cd frontend`
-`npm run build`
+`cd ./frontend
+npm install`
 
-3. run server
+* develop frontend
+`cd ./frontend
+npm run dev`
+
+* build vue frontend (builds to ./public folder)
+`cd ./frontend
+npm run build`
+
+* run server
 `npm start`
+
+* quick build vue + run server
+`npm run dev`
