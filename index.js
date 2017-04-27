@@ -12,7 +12,9 @@ try {
   config = require('./creds') // use the local configs if available
 } catch (e) {
   console.log('you need the facebook, mongo db, etc credentials... (setup local creds.json file or use heroku config vars)')
-  config.port = 3000 
+  config.FB_AUTH_TOKEN = process.env.FB_AUTH_TOKEN
+  config.FB_FREEDGE_GROUP_ID = process.env.FB_FREEDGE_GROUP_ID
+  config.FB_ALBUM_ID = process.env.FB_ALBUM_ID
 }
 // need to figure out local + server credential situation
 // var creds = require('./creds.json') === 'undefined' ? 'server' : 'local'      //
@@ -162,7 +164,7 @@ function startup(err, database) {
   updateFoodList()
 
   app.listen(process.env.PORT || 3000) // run express (3000 for local, env for server)
-  console.log('Express server listening on port 3000 or env')
+  console.log('Express server listening on port 3000 or env port')
 }
 
 MongoClient.connect('mongodb://foodie:ilovefood@ds153609.mlab.com:53609/dynamic-web-db', startup) // keep this at very end
