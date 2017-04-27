@@ -7,12 +7,12 @@ var path = require('path')
 var fs = require('fs')                              // file system for managing image uploads
 var multer  = require('multer')                     // handles temp photo storage on server
 var request = require('request')                    // posts to Facebook
-var config
+var config = {}
 try {
   config = require('./creds') // use the local configs if available
 } catch (e) {
   console.log('you need the facebook, mongo db, etc credentials... (setup local creds.json file or use heroku config vars)')
-  config.server.port = 3000 
+  config.port = 3000 
 }
 // need to figure out local + server credential situation
 // var creds = require('./creds.json') === 'undefined' ? 'server' : 'local'      //
