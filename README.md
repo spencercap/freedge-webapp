@@ -3,38 +3,46 @@
 
 **installs**
 
-`cd ./
+```cli
+cd ./
+npm install
+```
 
+```cli
+cd ./frontend
 npm install`
-
-`cd ./frontend
-
-npm install`
+```
 
 
 
 **develop frontend**
 
-`cd ./frontend
-
+```cli
+cd ./frontend
 npm run dev`
+```
 
 
 
 **build vue frontend** (builds to ./public folder)
 
-`cd ./frontend
-
+```cli
+cd ./frontend
 npm run build`
+```
 
 
 
 **run server**
 
-`npm start`
+```cli
+npm start
+```
 
 
 
 **quick build vue + run server**
 
-`npm run dev`
+```cli
+npm run dev
+```
