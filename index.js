@@ -7,8 +7,8 @@ var path = require('path')
 var fs = require('fs')                              // file system for managing image uploads
 var multer  = require('multer')                     // handles temp photo storage on server
 var request = require('request')                    // posts to Facebook
-var creds = require('./creds.json')                 // get credentials
-console.log(creds.facebook)
+// const creds = require('./creds.json')                 // get credentials
+console.log(process.env.FB_AUTH_TOKEN)
 // setup
 var app = express()
 var storage = multer.diskStorage({
@@ -16,7 +16,7 @@ var storage = multer.diskStorage({
     cb(null, './tmp/')
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + '.jpg')
+    cb(null, file.fieldname + '_' + Date.now() + '.jpg')
   }
 });
 var upload = multer({ storage: storage })
