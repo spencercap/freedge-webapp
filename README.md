@@ -3,46 +3,59 @@
 
 **installs**
 
+`cd ./
+
+npm install`
+
+`cd ./frontend
+
+<<<<<<< HEAD
 ```cli
-cd ./
+cd ./frontend
 npm install
 ```
-
-```cli
-cd ./frontend
+=======
 npm install`
-```
+>>>>>>> parent of 2c89dc8... readme format
 
 
 
-**develop frontend**
+**dev frontend**
 
+<<<<<<< HEAD
 ```cli
 cd ./frontend
-npm run dev`
+npm run dev
 ```
+=======
+`cd ./frontend
+
+npm run dev`
+>>>>>>> parent of 2c89dc8... readme format
 
 
 
 **build vue frontend** (builds to ./public folder)
 
+<<<<<<< HEAD
 ```cli
 cd ./frontend
-npm run build`
+npm run build
 ```
+=======
+`cd ./frontend
+
+npm run build`
+>>>>>>> parent of 2c89dc8... readme format
 
 
 
 **run server**
 
-```cli
-npm start
-```
+`npm start`
 
 
 
 **quick build vue + run server**
 
-```cli
-npm run dev
-```
+`npm run dev`
