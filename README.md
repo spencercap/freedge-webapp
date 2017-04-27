@@ -42,3 +42,16 @@ npm start
 ```cli
 npm run dev
 ```
+
+**credentials (posting to facebook)**
+
+create local creds.json file for dev or set config vars on server
+
+EX.
+```json
+{
+  "FB_AUTH_TOKEN": "*******",
+  "FB_FREEDGE_GROUP_ID": "*******",
+  "FB_ALBUM_ID": "*******"
+}
+```

@@ -11,7 +11,7 @@ var config = {}
 try {
   config = require('./creds') // use the local configs if available
 } catch (e) {
-  console.log('you need the facebook, mongo db, etc credentials... (setup local creds.json file or use heroku config vars)')
+  console.log('need to configure credentials... (setup local creds.json file or use heroku config vars)')
   config.FB_AUTH_TOKEN = process.env.FB_AUTH_TOKEN
   config.FB_FREEDGE_GROUP_ID = process.env.FB_FREEDGE_GROUP_ID
   config.FB_ALBUM_ID = process.env.FB_ALBUM_ID
