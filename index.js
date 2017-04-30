@@ -204,16 +204,14 @@ function updateFoodList() {
 
 function startup(err, database) {
   if (err) return console.log(err)
-  foodCollection = database.collection('foodItemsCollection')
+  foodCollection = database.collection('nyu.freedge.collection.brooklyn.01')
   updateFoodList()
 
-  // app.listen(process.env.PORT || 8080) // run express (3000 for local, env for server)
-  app.set( "ipaddr", "127.0.0.1" );
-  app.set( "port", process.env.PORT || 3000 );
-  http.listen(process.env.PORT || 3000); // run server (3000 for local, env for server)
-
-  // server.listen(3000)
+  var port = process.env.PORT || 3000
+  app.set( "ipaddr", "127.0.0.1" )
+  app.set( "port", port )
+  http.listen(port) // run server (NOT "app.listen(process.env.PORT || 3000)" like usual... 3000 for local, env for server)
   console.log('Express server listening on port 3000 or env port')
 }
 
-MongoClient.connect('mongodb://foodie:ilovefood@ds153609.mlab.com:53609/dynamic-web-db', startup) // keep this at very end
+MongoClient.connect('mongodb://NYUfreedge:NYUfreedge123@ds127391.mlab.com:27391/nyufreedge', startup) // keep this at very end

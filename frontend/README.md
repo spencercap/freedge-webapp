@@ -1,4 +1,4 @@
-# axios-testing
+# freedge-frontend
 
 > A Vue.js project
 
