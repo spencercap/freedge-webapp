@@ -7,7 +7,7 @@ var path = require('path')
 var fs = require('fs')                              // file system for managing image uploads
 var multer  = require('multer')                     // handles temp photo storage on server
 var request = require('request')                    // posts to Facebook
-var config = {}
+var config = {}                                     // account credentials
 try {
   config = require('./creds') // use the local configs if available
 } catch (e) {
@@ -16,11 +16,6 @@ try {
   config.FB_FREEDGE_GROUP_ID = process.env.FB_FREEDGE_GROUP_ID
   config.FB_ALBUM_ID = process.env.FB_ALBUM_ID
 }
-// need to figure out local + server credential situation
-// var creds = require('./creds.json') === 'undefined' ? 'server' : 'local'      //
-// console.log(process.env.FB_AUTH_TOKEN)
-console.log(config)
-// console.log( process.env.FB_AUTH_TOKEN || creds.FB_AUTH_TOKEN)
 // setup
 var app = express()
 var storage = multer.diskStorage({
@@ -34,6 +29,10 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 app.use(bodyParser.urlencoded({extended: true}))
 app.use('/', express.static('public'))              // define static folder for vue frontend code
+var server = require('http').Server(app);
+var http = require( "http" ).createServer( app );
+var io = require('socket.io')(http);              // web sockets realtime updates front + server
+
 // vars
 var foodCollection
 var foodList = []
@@ -45,8 +44,30 @@ app.get('/', function (req, res) {
   res.sendFile('./public/index.html')
 })
 
+app.post('/testing', upload.single('foodpic'), function (req, res) {
+  console.log(req.file)
+  // req.file holds img file
+
+  // multer tmp file (dont do form data)
+
+  // res.json( {status: 'ok!'} )
+  res.send( true )
+})
+
+app.post('/add-food', upload.single('foodpic'), function (req, res) {
+  console.log(req.body)
+  // req.file holds img file
+
+  // multer tmp file (dont do form data)
+
+  res.json( {status: 'ok!'} )
+})
+
 app.post('/uploadImage', function (req, res) {
   console.log(req)
+  console.log('spacer')
+  console.log(req.file)
+  console.log(req.body)
   // multer tmp file (dont do form data)
 
   res.json( {status: 'ok!'} )
@@ -150,6 +171,29 @@ app.post('/addEmail/:email', function (req, res, next) {
 
 
 
+/*   SOCKET.io    */
+var messages = [];
+
+io.on('connection', function (client) {
+  console.log('a client connected!');
+  console.log(messages);
+
+  client.emit('initialize', messages);
+
+  client.on('message', function (data) {
+    console.log('message recieved', data);
+    messages.push(data);
+    client.broadcast.emit('message', data);
+  });
+
+});
+
+
+
+
+
+
+
 /*   FUNCTIONS   */
 function updateFoodList() {
   foodCollection.find().toArray(function(err, results) {
@@ -163,7 +207,12 @@ function startup(err, database) {
   foodCollection = database.collection('foodItemsCollection')
   updateFoodList()
 
-  app.listen(process.env.PORT || 3000) // run express (3000 for local, env for server)
+  // app.listen(process.env.PORT || 8080) // run express (3000 for local, env for server)
+  app.set( "ipaddr", "127.0.0.1" );
+  app.set( "port", process.env.PORT || 3000 );
+  http.listen(process.env.PORT || 3000); // run server (3000 for local, env for server)
+
+  // server.listen(3000)
   console.log('Express server listening on port 3000 or env port')
 }
 

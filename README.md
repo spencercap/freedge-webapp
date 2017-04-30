@@ -47,7 +47,7 @@ npm run dev
 
 create local creds.json file for dev or set config vars on server
 
-EX.
+EXAMPLE creds.json
 ```json
 {
   "FB_AUTH_TOKEN": "*******",
