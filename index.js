@@ -31,9 +31,9 @@ var tempURL
 
 /*   ROUTES   */
 app.get('/', function (req, res) {
-  // res.send('Hello World!')
   res.sendFile('./public/index.html')
 })
+
 
 // deleting
 // TODO include announcements - socket emit
@@ -82,20 +82,21 @@ app.post('/addEmail/:email', function (req, res, next) {
 var messages = [];
 
 io.on('connection', function (client) {
-  console.log('a client connected!');
-  console.log(messages);
+  console.log('a client connected!')
+  console.log(messages)
+  console.log(foodList)
 
-  client.emit('initialize', foodList);
+  client.emit('initialize', foodList)
 
   client.on('message', function (data) {
-    postToFacebook(data);
+    postToFacebook(data)
     // TODO seperate add to mLab DB function ES6 Generator
 
     // messages.push(data);
     // client.broadcast.emit('message', foodItem)
-  });
+  })
 
-});
+})
 
 
 

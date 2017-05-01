@@ -1,13 +1,21 @@
 <template>
   <div id="app">
     <img src="./assets/logo.png">
-    <router-view></router-view>
+    <!-- <router-view></router-view> -->
+    <!-- ADD FOOD CONTAINER MODULE -->
+    <add-food></add-food>
+    <add-food></add-food>
   </div>
 </template>
 
 <script>
+import AddFood from './components/add-food.vue'
+
 export default {
-  name: 'app'
+  name: 'app',
+  components: {
+    'add-food': AddFood
+  }
 }
 </script>
 

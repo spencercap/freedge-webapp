@@ -32,6 +32,7 @@
 <script>
   // eslint-disable-next-line
   var socket = io.connect(window.location.origin) // grabs socket io automatically from server instance? (ignored by linter.)
+  var comp
 
   export default {
     name: 'add-food',
@@ -88,14 +89,15 @@
     },
     mounted () {
       console.log('mounted')
+      comp = this
       // console.log(foods)
     }
   }
 
   socket.on('initialize', function (foods) {
     console.log('recieved socket initialize from server')
-    this.foods = foods
-    console.log(this)
+    comp.foods = foods
+    console.log(comp)
     // chatApp.scrollToBottom()
   })
 
