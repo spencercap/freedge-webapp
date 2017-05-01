@@ -3,10 +3,10 @@ var express = require('express')                    // server
 var bodyParser = require('body-parser')
 var MongoClient = require('mongodb').MongoClient    // easy mongo DB api
 var ObjectID = require('mongodb').ObjectID
-var path = require('path')
+var base64Img = require('base64-img')               // handles temp photo storage on server
+// var path = require('path')
 var fs = require('fs')                              // file system for managing image uploads
-var multer  = require('multer')                     // handles temp photo storage on server
-var request = require('request')                    // posts to Facebook
+var request = require('request')                    // http posts (Facebook)
 var config = {}                                     // account credentials
 try {
   config = require('./creds') // use the local configs if available
@@ -18,15 +18,6 @@ try {
 }
 // setup
 var app = express()
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './tmp/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '_' + Date.now() + '.jpg')
-  }
-});
-var upload = multer({ storage: storage })
 app.use(bodyParser.urlencoded({extended: true}))
 app.use('/', express.static('public'))              // define static folder for vue frontend code
 var server = require('http').Server(app);
@@ -36,7 +27,7 @@ var io = require('socket.io')(http);              // web sockets realtime update
 // vars
 var foodCollection
 var foodList = []
-
+var tempURL
 
 /*   ROUTES   */
 app.get('/', function (req, res) {
@@ -44,96 +35,13 @@ app.get('/', function (req, res) {
   res.sendFile('./public/index.html')
 })
 
-app.post('/testing', upload.single('foodpic'), function (req, res) {
-  console.log(req.file)
-  // req.file holds img file
-
-  // multer tmp file (dont do form data)
-
-  // res.json( {status: 'ok!'} )
-  res.send( true )
-})
-
-app.post('/add-food', upload.single('foodpic'), function (req, res) {
-  console.log(req.body)
-  // req.file holds img file
-
-  // multer tmp file (dont do form data)
-
-  res.json( {status: 'ok!'} )
-})
-
-app.post('/uploadImage', function (req, res) {
-  console.log(req)
-  console.log('spacer')
-  console.log(req.file)
-  console.log(req.body)
-  // multer tmp file (dont do form data)
-
-  res.json( {status: 'ok!'} )
-})
-
-// adding food
-app.post('/create', upload.single('foodpic'), function (req, res, next) {
-  // req.file holds img file
-  // req.body holds text fields
-
-  var FB_ID;
-
-  // ---POST to Facebook---
-  // made possible with help from http://kschenk.com/uploading-images-to-facebook-in-node-js/
-  request.post(
-    {
-      url: 'https://graph.facebook.com/' + facebook.FB_AlbumID + '/photos?access_token=' + facebook.FB_authToken,
-      formData: {
-          message: 'Status: Available', // put in the JSON description of food here
-          source: fs.createReadStream(req.file.path)
-      }
-    }, function(err, resPost, body) {
-          var bodyObject = JSON.parse(body);
-          FB_ID = bodyObject.id;
-
-          request('https://graph.facebook.com/v2.8/' + FB_ID + '?fields=images&access_token=' + facebook.FB_authToken, function (error, response, body) {
-              // console.log('error:', error); // console.log('statusCode:', response && response.statusCode); // console.log('body:', body);
-              var response = JSON.parse(body).images;
-              var FB_Image_URL = response[0].source ;
-
-              var foodItem = {
-                name: req.body.name.trim(),
-                description: req.body.description.trim(),
-                date: req.body.date.trim(),
-                FB_ID: FB_ID,
-                FB_Image_URL: FB_Image_URL
-              }; // create the food item
-              console.log(foodItem);
-              foodCollection.insert(foodItem, function(err, result){
-                if ( result.result.ok ) {
-                  res.redirect('/#receive');
-                  console.log('uploaded to mLab DB');
-                } else { console.log(result); }
-              }); // add to mLab database
-
-              if(bodyObject.error) {
-                console.log(bodyObject.error.message);
-              } // handle the error response
-          }); // request image from FB
-      }
-  );
-
-  // res.redirect('/');
-
-});
-
-
 // deleting
+// TODO include announcements - socket emit
 app.get('/food/:id/delete', function(req, res) {
   announcement = 'taking...';
 
   foodCollection.remove({_id: ObjectID(req.params.id)}, function(err, result) {
     // console.log(result);
-
-
-
 
     // this is a temp auth token, look into long one
     var FB_authToken2 = 'EAAfvwZCToPzQBAP96iwx0ZB1XztPdP7EVHBS9IOUcpJSXFoqRdTui3oi8AJ7ZBuVsOTvp9kOzkYZCA2OwdlyZA0vhJ9PMyUZCSdPbhHZAv5iRY2NP6HI132ypLicD3w0gvGoyL8VWJRiZAi2Io3Hc3j8Q7xIuQIN8ZBKjAYE36wT2RwZC0rTx6riEiZCtSK4wevnewZD';
@@ -151,7 +59,6 @@ app.get('/food/:id/delete', function(req, res) {
   });
 
 });
-
 
 // adding email
 app.post('/addEmail/:email', function (req, res, next) {
@@ -178,12 +85,14 @@ io.on('connection', function (client) {
   console.log('a client connected!');
   console.log(messages);
 
-  client.emit('initialize', messages);
+  client.emit('initialize', foodList);
 
   client.on('message', function (data) {
-    console.log('message recieved', data);
-    messages.push(data);
-    client.broadcast.emit('message', data);
+    postToFacebook(data);
+    // TODO seperate add to mLab DB function ES6 Generator
+
+    // messages.push(data);
+    // client.broadcast.emit('message', foodItem)
   });
 
 });
@@ -195,14 +104,86 @@ io.on('connection', function (client) {
 
 
 /*   FUNCTIONS   */
-function updateFoodList() {
+function getFBimgURL (id) {
+  // ES6 Generator functions... * yield...
+  request('https://graph.facebook.com/v2.8/' + id + '?fields=images&access_token=' + config.FB_AUTH_TOKEN, function (error, response, body) {
+    if (error) {
+      return console.error('getting facebook img URL failed:', error);
+    }
+    // console.log('error:', error); // console.log('statusCode:', response && response.statusCode); // console.log('body:', body);
+    var response = JSON.parse(body).images;
+    tempURL = response[0].source ;
+
+  })
+
+}
+
+
+function postToFacebook (newFood) {
+  // learned from http://kschenk.com/uploading-images-to-facebook-in-node-js/
+  request.post({
+    url: 'https://graph.facebook.com/' + config.FB_ALBUM_ID + '/photos?access_token=' + config.FB_AUTH_TOKEN,
+    formData: {
+        message: 'Status: Available', // put in the JSON description of food here
+        file: fs.createReadStream( base64Img.imgSync(newFood.image, 'tmp', 'foodpic_'+ Date.now() ))
+    }
+  }, function(err, resPost, body) {
+      if (err) {
+        return console.error('facebook upload failed:', err)
+      }
+      var FB_POST_ID = JSON.parse(body).id
+      console.log('posted to facebook, id: ' + FB_POST_ID)
+
+
+      // TODO syncrhonous callbacks
+      // TODO socket emit updates "food adding...", "food successfully added...", "email subscribed"
+      // ES6 Generator functions... * yield...
+      // http://www.tivix.com/blog/making-promises-in-a-synchronous-manner/
+      // getFBimgURL(FB_POST_ID) // below
+      request('https://graph.facebook.com/v2.8/' + FB_POST_ID + '?fields=images&access_token=' + config.FB_AUTH_TOKEN, function (error, response, body) {
+        if (error) {
+          return console.error('getting facebook img URL failed:', error)
+        }
+        var tempURL = JSON.parse(body).images[0].source
+        console.log('got facebook img URL: ' + tempURL)
+
+
+        // TODO seperate create food instance function
+        // TODO append all info facebook post
+        var foodItem = {
+          name: newFood.name.trim(),
+          description: newFood.description.trim(),
+          date: newFood.date.trim(),
+          time: newFood.time.trim(),
+          FB_POST_ID: FB_POST_ID,
+          FB_Image_URL: tempURL
+        }
+        // console.log(foodItem)
+
+
+        // TODO seperate add to mLab DB function ES6 Generator
+        foodCollection.insert(foodItem, function(err, result){
+          if ( result.result.ok ) {
+            console.log('uploaded to mLab DB')
+            // TODO socket emit refresh
+            // client.broadcast.emit('message', foodItem)
+          } else { console.log(result) }
+        })
+
+      })
+
+    }
+  )
+}
+
+function updateFoodList () {
   foodCollection.find().toArray(function(err, results) {
     foodList = results;
     console.log(foodList);  // get mongo db
   });
 }
 
-function startup(err, database) {
+function startup (err, database) {
   if (err) return console.log(err)
   foodCollection = database.collection('nyu.freedge.collection.brooklyn.01')
   updateFoodList()
