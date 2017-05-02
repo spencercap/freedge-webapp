@@ -23,7 +23,7 @@
   var socket = io.connect(window.location.origin) // grabs socket io automatically from server instance? (ignored by linter.)
   // var comp
 
-  var vueFood = {
+  export default vueFood = {
     name: 'add-food',
     data () {
       return {
@@ -92,21 +92,21 @@
 
 
       // PUT SOCKETS IN THE VUE OBJ
-      socket.on('message', (food) => {
-        // chatApp.scrollToBottom()
-        // this.foods.push(food)
-        console.log('recieved new food from server')
-        console.log(food)
-        console.log(vueFood)
-        this.foods.push(food)
-
-      })
+      // socket.on('message', (food) => {
+      //   // chatApp.scrollToBottom()
+      //   // this.foods.push(food)
+      //   console.log('recieved new food from server')
+      //   console.log(food)
+      //   console.log(vueFood)
+      //   this.foods.push(food)
+      //
+      // })
     }
   }
 
 
 
-  export default vueFood;
+  // export default vueFood;
 
   // socket.on('initialize', function (foods) {
   //   console.log('recieved socket initialize from server')
@@ -116,7 +116,15 @@
   //   // chatApp.scrollToBottom()
   // })
 
+  socket.on('message', (food) => {
+    // chatApp.scrollToBottom()
+    // this.foods.push(food)
+    console.log('recieved new food from server')
+    console.log(food)
+    console.log(vueFood)
+    // this.foods.push(food)
 
+  })
 
 </script>
 
