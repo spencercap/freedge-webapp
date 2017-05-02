@@ -89,7 +89,7 @@ io.on('connection', function (client) {
   client.emit('initialize', foodList)
 
   client.on('message', function (data) {
-    postToFacebook(data)
+    postToFacebook(data, client)
     // TODO seperate add to mLab DB function ES6 Generator
 
     // messages.push(data);
@@ -120,7 +120,7 @@ function getFBimgURL (id) {
 }
 
 
-function postToFacebook (newFood) {
+function postToFacebook (newFood, client) {
   // learned from http://kschenk.com/uploading-images-to-facebook-in-node-js/
   request.post({
     url: 'https://graph.facebook.com/' + config.FB_ALBUM_ID + '/photos?access_token=' + config.FB_AUTH_TOKEN,
@@ -167,7 +167,9 @@ function postToFacebook (newFood) {
           if ( result.result.ok ) {
             console.log('uploaded to mLab DB')
             // TODO socket emit refresh
-            // client.broadcast.emit('message', foodItem)
+            // client.broadcast.emit('message', foodItem) // sends to all connections EXCEPT the one who sent it.
+            client.emit('message', foodItem)
+
           } else { console.log(result) }
         })
 

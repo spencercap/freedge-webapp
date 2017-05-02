@@ -18,23 +18,12 @@
   </div>
 </template>
 
-<!-- <template>
-  <div class="list-container">
-    <ul v-if="items.length">
-      <li v-for="item in items" :key="item.id">
-        {{ item.name }}
-      </li>
-    </ul>
-    <p v-else>No items found.</p>
-  </div>
-</template> -->
-
 <script>
   // eslint-disable-next-line
   var socket = io.connect(window.location.origin) // grabs socket io automatically from server instance? (ignored by linter.)
-  var comp
+  // var comp
 
-  export default {
+  var vueFood = {
     name: 'add-food',
     data () {
       return {
@@ -89,23 +78,45 @@
     },
     mounted () {
       console.log('mounted')
-      comp = this
+
+      socket.on('initialize', (foods) => {
+        console.log('recieved socket initialize from server')
+        this.foods = foods
+        // console.log
+        // console.log(comp)
+        // chatApp.scrollToBottom()
+      })
+
+      // comp = this
       // console.log(foods)
+
+
+      // PUT SOCKETS IN THE VUE OBJ
+      socket.on('message', (food) => {
+        // chatApp.scrollToBottom()
+        // this.foods.push(food)
+        console.log('recieved new food from server')
+        console.log(food)
+        console.log(vueFood)
+        this.foods.push(food)
+
+      })
     }
   }
 
-  socket.on('initialize', function (foods) {
-    console.log('recieved socket initialize from server')
-    comp.foods = foods
-    console.log(comp)
-    // chatApp.scrollToBottom()
-  })
 
-  socket.on('message', function (food) {
-    // chatApp.scrollToBottom()
-    this.foods.push(food)
-    console.log('recieved new food from server')
-  })
+
+  export default vueFood;
+
+  // socket.on('initialize', function (foods) {
+  //   console.log('recieved socket initialize from server')
+  //   vueFood.foods = foods
+  //   // console.log
+  //   // console.log(comp)
+  //   // chatApp.scrollToBottom()
+  // })
+
+
 
 </script>
 
