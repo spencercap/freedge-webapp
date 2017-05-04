@@ -10,6 +10,7 @@
     <div class="add-food-container" v-on:click="addingFood = !addingFood" v-bind:class="{ addingFood: addingFood }">
       <add-food></add-food>
     </div>
+    <!-- make the above siblings to avoid click error w datepicker and background propogration --> 
     <foods-container id="receive"></foods-container>
 
   </div>

@@ -17,7 +17,7 @@
       </div>
 
       <div class="row2">
-        <datepicker input-class="betterCalStyle" v-model="date" name="uniquename"></datepicker>
+        <datepicker input-class="betterCalStyle" id="dtpckr" v-model="date" name="uniquename"></datepicker>
         <vue-timepicker :format="timeFormat"
                         :minute-interval="15"
                         hide-clear-button
@@ -126,6 +126,8 @@
     }
   }
   export default vueFood
+
+
 
 </script>
 

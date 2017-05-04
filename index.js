@@ -191,7 +191,7 @@ function startup (err, database) {
   foodCollection = database.collection('nyu.freedge.collection.brooklyn.01')
   updateFoodList()
 
-  var port = process.env.PORT || 3000
+  var port = process.env.PORT || 3001
   app.set( "ipaddr", "127.0.0.1" )
   app.set( "port", port )
   http.listen(port) // run server (NOT "app.listen(process.env.PORT || 3000)" like usual... 3000 for local, env for server)

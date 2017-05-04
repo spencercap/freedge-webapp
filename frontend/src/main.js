@@ -17,3 +17,7 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
+
+// document.getElementById("dtpckr").addEventListener("blur", function() {
+//   console.log('blurrrrred')
+// })
