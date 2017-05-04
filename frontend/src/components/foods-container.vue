@@ -1,5 +1,6 @@
 <template>
-  <div id="food-container">
+  <div id="foods-container">
+    <span>ALL FOODS</span>
     <!-- <template>
       <div class="list-container">
         <ul v-if="items.length">
@@ -17,10 +18,9 @@
 <script>
   // eslint-disable-next-line
   var socket = io.connect(window.location.origin) // grabs socket io automatically from server instance? (ignored by linter.)
-  var comp
 
   export default {
-    name: 'food-container',
+    name: 'foods-container',
     data () {
       return {
         foods: []
@@ -36,24 +36,21 @@
     },
     mounted () {
       console.log('mounted')
-      comp = this
       // console.log(foods)
+
+      socket.on('initialize', (foods) => {
+        console.log('recieved socket initialize from server')
+        this.foods = foods
+        // chatApp.scrollToBottom()
+      })
+
+      socket.on('message', (food) => {
+        // chatApp.scrollToBottom()
+        this.foods.push(food)
+        console.log('recieved new food from server')
+      })
     }
   }
-
-  socket.on('initialize', function (foods) {
-    console.log('recieved socket initialize from server')
-    comp.foods = foods
-    console.log(comp)
-    // chatApp.scrollToBottom()
-  })
-
-  socket.on('message', function (food) {
-    // chatApp.scrollToBottom()
-    this.foods.push(food)
-    console.log('recieved new food from server')
-  })
-
 </script>
 
 <style scoped>

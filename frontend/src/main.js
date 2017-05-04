@@ -2,13 +2,16 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import vueSmoothScroll from 'vue-smooth-scroll'
 // import router from './router'
 
 Vue.config.productionTip = false
 Vue.config.devtools = true
+Vue.use(vueSmoothScroll)
 
+// var vm = new Vue({
 /* eslint-disable no-new */
-var thevue = new Vue({
+new Vue({
   el: '#app',
   // router,
   template: '<App/>',
