@@ -12,16 +12,16 @@
       </div>
 
       <div class="row2">
-        <input type="text" placeholder="name" v-model="name">
-        <input type="text" placeholder="description" v-model="description">
+        <input type="text" placeholder="name" v-model.trim="name">
+        <input type="text" placeholder="description" v-model.trim="description">
       </div>
 
       <div class="row2">
-        <datepicker input-class="betterCalStyle" id="dtpckr" v-model="date" name="uniquename"></datepicker>
+        <datepicker input-class="betterCalStyle" id="dtpckr" v-model.trim="date" name="uniquename"></datepicker>
         <vue-timepicker :format="timeFormat"
                         :minute-interval="15"
                         hide-clear-button
-                        v-model="timeValue">
+                        v-model.trim="timeValue">
         </vue-timepicker>
       </div>
 
@@ -48,7 +48,6 @@
     },
     data () {
       return {
-        foods: [],
         name: '',
         description: '',
         date: new Date(),
@@ -73,10 +72,9 @@
             time: this.time,
             image: this.image
           }
-          this.foods.push(chat)
-          socket.emit('message', chat)
+          // this.foods.push(chat)
+          socket.emit('addFood', chat)
           this.description = ''
-          // this.scrollToBottom();
         }
       },
       uploadFile (e) {
@@ -106,23 +104,23 @@
     mounted () {
       console.log('mounted')
 
-      socket.on('initialize', (foods) => {
-        console.log('recieved socket initialize from server')
-        this.foods = foods
-        // console.log
-        // console.log(comp)
-        // chatApp.scrollToBottom()
-      })
-
-      // PUT SOCKETS IN THE VUE OBJ
-      socket.on('message', (food) => {
-        // chatApp.scrollToBottom()
-        // this.foods.push(food)
-        console.log('recieved new food from server')
-        console.log(food)
-        console.log(vueFood)
-        this.foods.push(food)
-      })
+      // socket.on('initialize', (foods) => {
+      //   console.log('recieved socket initialize from server')
+      //   this.foods = foods
+      //   // console.log
+      //   // console.log(comp)
+      //   // chatApp.scrollToBottom()
+      // })
+      //
+      // // PUT SOCKETS IN THE VUE OBJ
+      // socket.on('message', (food) => {
+      //   // chatApp.scrollToBottom()
+      //   // this.foods.push(food)
+      //   console.log('recieved new food from server')
+      //   console.log(food)
+      //   console.log(vueFood)
+      //   this.foods.push(food)
+      // })
     }
   }
   export default vueFood

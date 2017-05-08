@@ -28,7 +28,6 @@ var io = require('socket.io')(http);              // web sockets realtime update
 var foodCollection
 var foodList = []
 var tempURL
-var fooder = {}
 
 /*   ROUTES   */
 app.get('/', function (req, res) {
@@ -80,40 +79,19 @@ app.post('/addEmail/:email', function (req, res, next) {
 
 
 /*   SOCKET.io    */
+var messages = [];
 
 io.on('connection', function (client) {
   console.log('a client connected!')
+  console.log(messages)
   console.log(foodList)
 
   client.emit('initialize', foodList)
 
-  client.on('addFood', function (data) {
+  client.on('message', function (data) {
+    postToFacebook(data, client)
+    // TODO seperate add to mLab DB function ES6 Generator
 
-    postToFacebook(data)
-    .then(function(newFood) {
-      console.log("success: post to fb", newFood)
-      return newFood
-    }, function(err) {
-      console.log('error: fb post', err)
-    })
-    .then(function(newFood) {
-      console.log('success: get fb url', newFood)
-      return getFBimgURL(newFood)
-    }, function(err) {
-      console.log('error: get fb url', err)
-    })
-    .then(function(newFood) {
-      console.log('success: post to mongo', newFood)
-      return postToMongo(newFood)
-    }, function(err) {
-      console.log('error: post to mongo', err)
-    })
-    .then(function(newFood) {
-      // client.broadcast.emit('addedFood') //
-      // client.emit('addedFood')
-      io.sockets.emit('addedFood', newFood)
-      return socket.broadcast.emit('addedFood', newFood)
-    })
     // messages.push(data);
     // client.broadcast.emit('message', foodItem)
   })
@@ -122,89 +100,42 @@ io.on('connection', function (client) {
 
 
 
+
+
+
+
 /*   FUNCTIONS   */
-function postToFacebook (data) {
-  return new Promise(function(resolve, reject) {
-    request.post(
-    {
-      url: 'https://graph.facebook.com/' + config.FB_ALBUM_ID + '/photos?access_token=' + config.FB_AUTH_TOKEN,
-      formData: {
+function getFBimgURL (id) {
+  // ES6 Generator functions... * yield...
+  request('https://graph.facebook.com/v2.8/' + id + '?fields=images&access_token=' + config.FB_AUTH_TOKEN, function (error, response, body) {
+    if (error) {
+      return console.error('getting facebook img URL failed:', error);
+    }
+    // console.log('error:', error); // console.log('statusCode:', response && response.statusCode); // console.log('body:', body);
+    var response = JSON.parse(body).images;
+    tempURL = response[0].source ;
+
+  })
+
+}
+
+
+function postToFacebook (newFood, client) {
+  // learned from http://kschenk.com/uploading-images-to-facebook-in-node-js/
+  request.post({
+    url: 'https://graph.facebook.com/' + config.FB_ALBUM_ID + '/photos?access_token=' + config.FB_AUTH_TOKEN,
+    formData: {
         message: 'Status: Available', // put in the JSON description of food here
-        file: fs.createReadStream( base64Img.imgSync(data.image, 'tmp', 'foodpic_'+ Date.now() ))
-      }
-    },
-    function(err, res, body) {
-      bodyObj = JSON.parse(body)
+        file: fs.createReadStream( base64Img.imgSync(newFood.image, 'tmp', 'foodpic_'+ Date.now() ))
+    }
+  }, function(err, resPost, body) {
       if (err) {
-        reject(err) // TODO make clear 1 line if ternary statements
-      } else if (bodyObj.error) {
-        reject(bodyObj.error)
-      } else {
-        var newFood = {
-          name: data.name,
-          description: data.description,
-          date: data.date,
-          time: data.time,
-          FB_POST_ID: bodyObj.id
-        }
-        resolve(newFood)
+        return console.error('facebook upload failed:', err)
       }
-      // err || bodyObj.error ? reject(err || bodyObj.error) :
-      //   console.log('failed')
-      //   resolve( fooder.FB_POST_ID )
-      //   // reject(Error(req.statusText))
-    })
-  })
-}
+      var FB_POST_ID = JSON.parse(body).id
+      console.log('posted to facebook, id: ' + FB_POST_ID)
 
-function getFBimgURL (newFood) {
-  return new Promise((resolve, reject) => {
-    request('https://graph.facebook.com/v2.8/' + newFood.FB_POST_ID + '?fields=images&access_token=' + config.FB_AUTH_TOKEN,
-      function (err, res, body) {
-        bodyObj = JSON.parse(body)
-        err || bodyObj.error ? reject(err || bodyObj.error) :
-          newFood.FB_IMG_URL = bodyObj.images[0].source
-          resolve( newFood )
-      })
-  })
-}
 
-function postToMongo (newFood) {
-  return new Promise((resolve, reject) => {
-    foodCollection.insert(newFood, function(err, result){
-      if ( result.result.ok ) {
-        resolve( newFood )
-        // TODO socket emit refresh
-        // client.broadcast.emit('message', foodItem) // sends to all connections EXCEPT the one who sent it.
-        // client.emit('message', foodItem)
-      } else {
-        reject(result)
-      }
-    })
-  })
-}
-
-function postToFacebookOLD (data) {
-  return new Promise((resolve, reject) => {
-    request.post(
-    {
-      url: 'https://graph.facebook.com/' + config.FB_ALBUM_ID + '/photos?access_token=' + config.FB_AUTH_TOKEN,
-      formData: {
-        message: 'Status: Available', // put in the JSON description of food here
-        file: fs.createReadStream( base64Img.imgSync(data.image, 'tmp', 'foodpic_'+ Date.now() ))
-      }
-    },
-    function(err, res, body) {
-      bodyObj = JSON.parse(body)
-      err || bodyObj.error ? reject(err || bodyObj.error) :
-        fooder.FB_POST_ID = bodyObj.id
-        console.log('in post to fb: ' + JSON.stringify(fooder))
-        resolve( fooder.FB_POST_ID )
-    })
-  })
-}
-
-/*
       // TODO syncrhonous callbacks
       // TODO socket emit updates "food adding...", "food successfully added...", "email subscribed"
       // ES6 Generator functions... * yield...
@@ -247,7 +178,6 @@ function postToFacebookOLD (data) {
     }
   )
 }
-*/
 
 function updateFoodList () {
   foodCollection.find().toArray(function(err, results) {

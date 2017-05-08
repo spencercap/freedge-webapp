@@ -44,10 +44,11 @@
         // chatApp.scrollToBottom()
       })
 
-      socket.on('message', (food) => {
+      socket.on('addedFood', (food) => {
         // chatApp.scrollToBottom()
         this.foods.push(food)
-        console.log('recieved new food from server')
+        console.log('worked')
+        console.log('added food', food)
       })
     }
   }
