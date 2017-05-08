@@ -7,10 +7,10 @@
       <a href="#receive" v-smooth-scroll="{ duration: 1250 }"><div class="actionButton receiveButton">RECEIVE</div></a>
     </div>
     <a href="#receive" v-smooth-scroll="{ duration: 1250 }"><div class="arrow">&darr;</div></a>
-    <div class="add-food-container" v-on:click="addingFood = !addingFood" v-bind:class="{ addingFood: addingFood }">
-      <add-food></add-food>
-    </div>
-    <!-- make the above siblings to avoid click error w datepicker and background propogration --> 
+    <div class="add-food-background" v-on:click="addingFood = !addingFood" v-bind:class="{ addingFood: addingFood }"></div>
+    <add-food v-if="addingFood"></add-food>
+
+    <!-- make the above siblings to avoid click error w datepicker and background propogration -->
     <foods-container id="receive"></foods-container>
 
   </div>
@@ -19,6 +19,8 @@
 <script>
 import AddFood from './components/add-food.vue'
 import FoodsContainer from './components/foods-container.vue'
+import Food from './components/food.vue'
+
 export default {
   name: 'app',
   components: {
@@ -62,18 +64,19 @@ export default {
     margin-top: 60px;
   }
 
-  .add-food-container {
+  .add-food-background {
     display: none;
   }
 
   .addingFood {
     display: block !important;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     background: rgba(0,0,0,0.3);
+    z-index: 50;
   }
 
   .actionContainer {

@@ -129,7 +129,11 @@ function postToFacebook (data) {
     {
       url: 'https://graph.facebook.com/' + config.FB_ALBUM_ID + '/photos?access_token=' + config.FB_AUTH_TOKEN,
       formData: {
-        message: 'Status: Available', // put in the JSON description of food here
+        message:
+        `Status: Available
+        Name: ${data.name}
+        Description: ${data.description}
+        Given: ${data.date} at ${data.time}`, // put in the JSON description of food here
         file: fs.createReadStream( base64Img.imgSync(data.image, 'tmp', 'foodpic_'+ Date.now() ))
       }
     },
@@ -203,51 +207,6 @@ function postToFacebookOLD (data) {
     })
   })
 }
-
-/*
-      // TODO syncrhonous callbacks
-      // TODO socket emit updates "food adding...", "food successfully added...", "email subscribed"
-      // ES6 Generator functions... * yield...
-      // http://www.tivix.com/blog/making-promises-in-a-synchronous-manner/
-      // getFBimgURL(FB_POST_ID) // below
-      request('https://graph.facebook.com/v2.8/' + FB_POST_ID + '?fields=images&access_token=' + config.FB_AUTH_TOKEN, function (error, response, body) {
-        if (error) {
-          return console.error('getting facebook img URL failed:', error)
-        }
-        var tempURL = JSON.parse(body).images[0].source
-        console.log('got facebook img URL: ' + tempURL)
-
-
-        // TODO seperate create food instance function
-        // TODO append all info facebook post
-        var foodItem = {
-          name: newFood.name.trim(),
-          description: newFood.description.trim(),
-          date: newFood.date.trim(),
-          time: newFood.time.trim(),
-          FB_POST_ID: FB_POST_ID,
-          FB_Image_URL: tempURL
-        }
-        // console.log(foodItem)
-
-
-        // TODO seperate add to mLab DB function ES6 Generator
-        foodCollection.insert(foodItem, function(err, result){
-          if ( result.result.ok ) {
-            console.log('uploaded to mLab DB')
-            // TODO socket emit refresh
-            // client.broadcast.emit('message', foodItem) // sends to all connections EXCEPT the one who sent it.
-            client.emit('message', foodItem)
-
-          } else { console.log(result) }
-        })
-
-      })
-
-    }
-  )
-}
-*/
 
 function updateFoodList () {
   foodCollection.find().toArray(function(err, results) {

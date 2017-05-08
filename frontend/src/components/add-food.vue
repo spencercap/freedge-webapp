@@ -1,5 +1,5 @@
 <template>
-  <div id="add-food" v-on:click.stop>
+  <div id="add-food">
     <form v-on:submit="addFood">
       <div class="title">ADD FOOD</div>
 
@@ -69,7 +69,7 @@
             name: this.name,
             description: this.description,
             date: this.date,
-            time: this.time,
+            time: this.timeValue.h + ':' + this.timeValue.mm + ' ' + this.timeValue.a,
             image: this.image
           }
           // this.foods.push(chat)
@@ -124,9 +124,6 @@
     }
   }
   export default vueFood
-
-
-
 </script>
 
 <style>
@@ -136,7 +133,7 @@
   }
 
   #add-food {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -145,6 +142,7 @@
     background: #fff;
     box-shadow: 0px 4px 16px 2px rgba(0,0,0,0.5);
     border-radius: 6px;
+    z-index: 100;
   }
 
   form {
