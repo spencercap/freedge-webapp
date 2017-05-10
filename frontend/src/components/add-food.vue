@@ -17,7 +17,7 @@
       </div>
 
       <div class="row2">
-        <datepicker input-class="betterCalStyle" id="dtpckr" v-model.trim="date" name="uniquename"></datepicker>
+        <datepicker input-class="betterCalStyle" id="dtpckr" v-model="date" name="uniquename"></datepicker>
         <vue-timepicker :format="timeFormat"
                         :minute-interval="15"
                         hide-clear-button
@@ -103,24 +103,6 @@
     },
     mounted () {
       console.log('mounted')
-
-      // socket.on('initialize', (foods) => {
-      //   console.log('recieved socket initialize from server')
-      //   this.foods = foods
-      //   // console.log
-      //   // console.log(comp)
-      //   // chatApp.scrollToBottom()
-      // })
-      //
-      // // PUT SOCKETS IN THE VUE OBJ
-      // socket.on('message', (food) => {
-      //   // chatApp.scrollToBottom()
-      //   // this.foods.push(food)
-      //   console.log('recieved new food from server')
-      //   console.log(food)
-      //   console.log(vueFood)
-      //   this.foods.push(food)
-      // })
     }
   }
   export default vueFood

@@ -85,7 +85,7 @@ io.on('connection', function (client) {
   console.log('a client connected!')
   console.log(foodList)
 
-  client.emit('initialize', foodList)
+  client.emit('initialize', updateFoodList() )
 
   client.on('addFood', function (data) {
 
@@ -132,8 +132,7 @@ function postToFacebook (data) {
         message:
         `Status: Available
         Name: ${data.name}
-        Description: ${data.description}
-        Given: ${data.date} at ${data.time}`, // put in the JSON description of food here
+        Description: ${data.description}`,
         file: fs.createReadStream( base64Img.imgSync(data.image, 'tmp', 'foodpic_'+ Date.now() ))
       }
     },
@@ -213,6 +212,7 @@ function updateFoodList () {
     foodList = results;
     console.log(foodList);  // get mongo db
   });
+  return foodList
 }
 
 function startup (err, database) {

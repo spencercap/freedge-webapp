@@ -8,6 +8,7 @@ import vueSmoothScroll from 'vue-smooth-scroll'
 Vue.config.productionTip = false
 Vue.config.devtools = true
 Vue.use(vueSmoothScroll)
+Vue.use(require('vue-moment'))
 
 // var vm = new Vue({
 /* eslint-disable no-new */

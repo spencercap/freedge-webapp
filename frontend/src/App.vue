@@ -19,7 +19,6 @@
 <script>
 import AddFood from './components/add-food.vue'
 import FoodsContainer from './components/foods-container.vue'
-import Food from './components/food.vue'
 
 export default {
   name: 'app',
@@ -117,6 +116,7 @@ export default {
     position: absolute;
     top: 100vh;
     height: 100vh;
+    padding: 0 1em;
   }
 
   .arrow {

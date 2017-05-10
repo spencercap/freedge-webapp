@@ -16,11 +16,11 @@
   "dependencies": {
     "axios": "^0.16.1",
     "vue": "^2.2.6",
+    "vue-moment": "git+https://github.com/brockpetrie/vue-moment.git",
     "vue-router": "^2.3.1",
     "vue-smooth-scroll": "^1.0.12",
     "vue2-timepicker": "^0.1.4",
-    "vuejs-datepicker": "^0.7.11",
-    "vuejs-datepicker-on-blur": "git+https://github.com/spencercap/vuejs-datepicker.git"
+    "vuejs-datepicker": "^0.7.11"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

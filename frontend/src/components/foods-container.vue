@@ -1,28 +1,19 @@
 <template>
   <div id="foods-container">
-    <div class="title">ALL FOOD</div>
-
+    <p class="title" v-if="foods.length">ALL FOOD</p>
     <div class="foodFlexbox" v-if="foods.length">
-      <food class="food" v-for="food in foods" :key="food.id">
-        <p>Name: {{food.name}}</p>
-        <p>Description: {{food.description}}</p>
-        <p>Given: {{food.date}} at {{food.time}}</p>
-        <div class="foodPic" v-bind:style="{ backgroundImage: 'url(' + food.FB_IMG_URL + ')' }"></div>
-        <!-- <p class="deleteButton" @click="deleteFood(food)">TAKE</p> -->
-
-        <!-- <a class="deleteButton" v-bind:href="'food/' + food._id + '/delete?FBID=' + food.FB_ID">TAKE</a> -->
+      <food v-for="food in foods"
+            class="food"
+            :name="food.name"
+            :description="food.description"
+            :date="food.date"
+            :time="food.time"
+            :fb-post-id="food.FB_POST_ID"
+            :fb-img-url="food.FB_IMG_URL"
+            :mongo-id="food._id">
       </food>
     </div>
-    <!-- <template>
-      <div class="list-container">
-        <ul v-if="items.length">
-          <li v-for="item in items" :key="item.id">
-            {{ item.name }}
-          </li>
-        </ul>
-        <p v-else>No items found.</p>
-      </div>
-    </template> -->
+    <p v-else>No items currently in the FREEdge.</p>
 
   </div>
 </template>
@@ -30,9 +21,13 @@
 <script>
   // eslint-disable-next-line
   var socket = io.connect(window.location.origin) // grabs socket io automatically from server instance? (ignored by linter.)
+  import Food from '../components/food.vue'
 
   export default {
     name: 'foods-container',
+    components: {
+      'food': Food
+    },
     data () {
       return {
         foods: []
@@ -91,7 +86,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 4em 0;
   }
 
   .food {
@@ -114,11 +108,10 @@
 
   .title {
     text-align: left;
-    position: absolute;
-    left: 1.5em;
     font-size: 2em;
     font-weight: bold;
     text-decoration: none;
+    margin: 0;
   }
 
 
